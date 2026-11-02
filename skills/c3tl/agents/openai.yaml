@@ -1,0 +1,4 @@
+interface:
+  display_name: "c3tl"
+  short_description: "Run and supervise Claude Code background sessions"
+  default_prompt: "Use $c3tl to run the requested task in a Claude Code session and report its result."
