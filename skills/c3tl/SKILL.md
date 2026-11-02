@@ -13,7 +13,7 @@ Each session is an ordinary Claude Code background session. A person can open it
 
 - Pass only the model, effort, tier, permission mode, and setting flags the user requested. Omit every other flag so the CLI defaults apply, even when a different setting seems better for the task. `start` and `review` default to `--permission-mode bypassPermissions`; never widen an explicitly requested permission mode to work around a failure.
 - A session keeps its launch options for its whole life. `queue` and `steer` cannot change the model, effort, tier, or permission mode; start a new session if those must change.
-- Set `--cwd` to the intended repository. Claude Code must already trust that directory; a trust error means a person must run `claude` there once and accept the prompt. Put the user's constraints verbatim at the top of the prompt. Delegation grants no additional authorization for edits, commits, pushes, or remote actions.
+- Set `--cwd` to the intended repository. Claude Code must already trust that directory; a trust error means a person must run `claude` there once and accept the prompt. Put the user's constraints on the delegated work verbatim at the top of the prompt; leave out instructions meant only for you as the supervisor, such as which model to launch or how to clean up sessions. Delegation grants no additional authorization for edits, commits, pushes, or remote actions.
 - Only modify sessions the user identified or that you started for this task. Resolve ambiguous targets with `list`.
 
 Use a quoted heredoc for substantial prompts; `start`, `queue`, and `steer` read stdin when the prompt or message is `-`:
@@ -57,7 +57,7 @@ Report the thread ID, outcome, validation, and remaining work.
 c3tl review --cwd /path/to/repo --base main --wait 3600
 ```
 
-The default target is uncommitted changes. Choose at most one of `--base BRANCH`, `--commit SHA`, or `--instructions TEXT`. `--level` sets the review depth (`low` to `max`); omit it unless the user asked for one, and use `max` only when they explicitly request it. Review uses tier `default` (standard speed) unless explicitly overridden; `--tier priority` selects Fast mode.
+The default target is uncommitted changes. Choose at most one of `--base BRANCH`, `--commit SHA`, or `--instructions TEXT`. `--level` sets the review depth (`low` to `max`); omit it unless the user asked for one, and use `max` only when they explicitly request it. The reviewer runs at the effort `/code-review` picks for its level, not at the session's `--effort`; `--model` does apply to it. Review uses tier `default` (standard speed) unless explicitly overridden; `--tier priority` selects Fast mode.
 
 `/code-review` has its own instructions; don't restate or override them. Prefer a built-in target and pass no text. Use `--instructions` only when no built-in target fits, with minimal text that names the target, plus the user's specific requests verbatim if they made any.
 
