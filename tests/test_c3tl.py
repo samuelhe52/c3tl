@@ -171,6 +171,12 @@ class StartTest(Env):
         self.assertEqual((code, out), (1, {"error": "empty message on stdin"}))
         self.assertEqual(self.bg_calls(), [])
 
+    def test_usage_errors_are_json_with_exit_1(self):
+        for argv in (["nosuchcommand"], ["start", "--model", "x"], ["wait", "t", "--seconds", "soon"]):
+            out, code = self.run_cli(*argv)
+            self.assertEqual(code, 1, argv)
+            self.assertIn("error", out)
+
     def test_untrusted_workspace_error_is_reported(self):
         st = self.state()
         st["untrusted"] = [os.path.realpath(self.cwd)]

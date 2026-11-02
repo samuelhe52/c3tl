@@ -796,10 +796,18 @@ def cmd_models(_a):
 
 # ---------------------------------------------------------------- CLI
 
+class JSONArgumentParser(argparse.ArgumentParser):
+    """Report usage errors as {"error": ...} with exit 1, like every other failure."""
+
+    def error(self, message):
+        print(json.dumps({"error": f"{self.prog}: {message}"}))
+        sys.exit(1)
+
+
 def build_parser():
-    p = argparse.ArgumentParser(prog="c3tl", description=__doc__,
-                                formatter_class=argparse.RawDescriptionHelpFormatter)
-    sub = p.add_subparsers(dest="cmd", required=True)
+    p = JSONArgumentParser(prog="c3tl", description=__doc__,
+                           formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = p.add_subparsers(dest="cmd", required=True, parser_class=JSONArgumentParser)
 
     def add(name, fn, help_):
         s = sub.add_parser(name, help=help_, description=help_)
