@@ -640,7 +640,7 @@ def cmd_watch(a):
     sess = resolve(a.thread)
     state = activity(sess, job_state(sess.get("id")))
     if state not in ("active", "waitingOnTasks") and not a.wait_start:
-        out = {"threadId": sess["sessionId"], "activeTurnId": None, "finished": True, "events": [],
+        out = {"threadId": sess["sessionId"], "activeTurnId": None, "finished": state != "blocked", "events": [],
                "threadStatus": state, "note": "no active turn; see `status` or `result`"}
         if state == "blocked":
             out["events"] = [blocker(sess, job_state(sess.get("id")))]
@@ -667,7 +667,8 @@ def cmd_watch(a):
     if state == "blocked":
         events.append(blocker(sess, job))
     last = tr.current or {}
-    return {"threadId": sess["sessionId"], "name": sess.get("name"), "finished": done, "threadStatus": state,
+    return {"threadId": sess["sessionId"], "name": sess.get("name"), "finished": done and state != "blocked",
+            "threadStatus": state,
             "activeTurnId": last.get("id") if last.get("status") == "inProgress" else None,
             "droppedEvents": max(0, len(events) - a.max_events), "events": events[-a.max_events:]}
 

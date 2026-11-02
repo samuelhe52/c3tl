@@ -232,6 +232,13 @@ class WaitTest(Env):
         self.assertFalse(out["finished"])
         self.assertEqual(out["errors"][-1]["needs"], "approve Bash: rm x")
 
+    def test_watch_on_blocked_session_is_not_finished(self):
+        self.add_session("cccc3333", [user("one", "p1")], job={"needs": "approve Write: /a"},
+                         pid=5, status="waiting", state="blocked")
+        out, _ = self.run_cli("watch", "cccc3333", "--seconds", "1")
+        self.assertEqual((out["finished"], out["threadStatus"]), (False, "blocked"))
+        self.assertEqual(out["events"][-1]["needs"], "approve Write: /a")
+
     def test_wait_on_stopped_session_reports_interrupted_turn(self):
         self.add_session("cccc3333", [user("one", "p1"), DONE, user("two", "p2")])
         out, _ = self.run_cli("wait", "cccc3333")
